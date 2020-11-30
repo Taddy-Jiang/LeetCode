@@ -132,3 +132,75 @@ public class Solution
     }
 }
 
+/// <summary>
+/// 题号：767. 重构字符串
+/// 题目：
+/// 给定一个字符串S，检查是否能重新排布其中的字母，使得两相邻的字符不同。
+/// 若可行，输出任意可行的结果。若不可行，返回空字符串。
+/// 示例 1:
+/// 输入: S = "aab"
+/// 输出: "aba"
+/// 示例 2:
+/// 输入: S = "aaab"
+/// 输出: ""
+/// 注意:
+/// S 只包含小写字母并且长度在[1, 500]区间内。
+/// </summary>
+public class Solution
+public class Solution
+{
+    public string ReorganizeString(string S)
+    {
+        int n = S.Length;
+        if (n < 2) return S;
+        Dictionary<char, int> Hash = new Dictionary<char, int>();
+        int MaxNum = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (!Hash.ContainsKey(S[i])) Hash.Add(S[i], 1);
+            else Hash[S[i]]++;
+            MaxNum = Math.Max(MaxNum, Hash[S[i]]);
+        }
+
+        //剪枝
+        //超过一半肯定不对
+        if (MaxNum > (n + 1) / 2) return "";
+
+        int[][] temp = new int[Hash.Count][];
+
+        int index = 0;
+        foreach (char c in Hash.Keys)
+        {
+            temp[index] = new int[2];
+            temp[index][0] = c - 'a';
+            temp[index][1] = Hash[c];
+            index++;
+        }
+        string result = "";
+
+        //模拟最大堆
+        Array.Sort(temp, (a, b) => b[1] - a[1]);
+        while (temp[0][1] > 0)
+        {
+            Array.Sort(temp, (a, b) => b[1] - a[1]);
+            if (temp[0][1] > 0 && temp[1][1] > 0)
+            {
+                result += (char)(temp[0][0] + 'a');
+                result += (char)(temp[1][0] + 'a');
+                temp[0][1]--;
+                temp[1][1]--;
+            }
+            else if (temp[0][1] > 0)
+            {
+                result += (char)(temp[0][0] + 'a');
+                temp[0][1]--;
+            }
+            else
+            {
+                continue;
+            }
+            Array.Sort(temp, (a, b) => b[1] - a[1]);
+        }
+        return result;
+    }
+}
