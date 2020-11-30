@@ -133,7 +133,6 @@ public class Solution
 }
 
 /// <summary>
-<<<<<<< HEAD
 /// 题号：767. 重构字符串
 /// 题目：
 /// 给定一个字符串S，检查是否能重新排布其中的字母，使得两相邻的字符不同。
@@ -147,7 +146,6 @@ public class Solution
 /// 注意:
 /// S 只包含小写字母并且长度在[1, 500]区间内。
 /// </summary>
-public class Solution
 public class Solution
 {
     public string ReorganizeString(string S)
@@ -201,7 +199,11 @@ public class Solution
                 continue;
             }
             Array.Sort(temp, (a, b) => b[1] - a[1]);
-=======
+        }
+        return result;
+    }
+}
+
 /// 题号：454. 四数相加 II
 /// 题目：
 /// 给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
@@ -225,8 +227,8 @@ public class Solution
     {
         int N = A.Length;
         if (N == 0) return 0;
-        Dictionary<int,int> sum1 = new Dictionary<int, int>();
-        Dictionary<int,int> sum2 = new Dictionary<int, int>();
+        Dictionary<int, int> sum1 = new Dictionary<int, int>();
+        Dictionary<int, int> sum2 = new Dictionary<int, int>();
 
         for (int i = 0; i < N; i++)
         {
@@ -244,7 +246,6 @@ public class Solution
         foreach (int num in sum1.Keys)
         {
             if (sum2.ContainsKey(0 - num)) result += sum1[num] * sum2[0 - num];
->>>>>>> 04f4477d22d07e23e44120a193def100a3f13ab3
         }
         return result;
     }
