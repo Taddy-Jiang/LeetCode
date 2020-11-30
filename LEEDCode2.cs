@@ -133,6 +133,7 @@ public class Solution
 }
 
 /// <summary>
+<<<<<<< HEAD
 /// 题号：767. 重构字符串
 /// 题目：
 /// 给定一个字符串S，检查是否能重新排布其中的字母，使得两相邻的字符不同。
@@ -200,6 +201,50 @@ public class Solution
                 continue;
             }
             Array.Sort(temp, (a, b) => b[1] - a[1]);
+=======
+/// 题号：454. 四数相加 II
+/// 题目：
+/// 给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
+/// 为了使问题简单化，所有的 A, B, C, D 具有相同的长度 N，且 0 ≤ N ≤ 500 。所有整数的范围在 -228 到 228 - 1 之间，最终结果不会超过 231 - 1 。
+/// 例如:
+/// 输入:
+/// A = [1, 2]
+/// B = [-2, -1]
+/// C = [-1, 2]
+/// D = [0, 2]
+/// 输出:
+/// 2
+/// 解释:
+/// 两个元组如下:
+/// 1. (0, 0, 0, 1)->A[0] + B[0] + C[0] + D[1] = 1 + (-2) + (-1) + 2 = 0
+/// 2. (1, 1, 0, 0)->A[1] + B[1] + C[0] + D[0] = 2 + (-1) + (-1) + 0 = 0
+/// </summary>
+public class Solution
+{
+    public int FourSumCount(int[] A, int[] B, int[] C, int[] D)
+    {
+        int N = A.Length;
+        if (N == 0) return 0;
+        Dictionary<int,int> sum1 = new Dictionary<int, int>();
+        Dictionary<int,int> sum2 = new Dictionary<int, int>();
+
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                int num1 = A[i] + B[j];
+                int num2 = C[i] + D[j];
+                if (!sum1.ContainsKey(num1)) sum1.Add(num1, 1);
+                else sum1[num1]++;
+                if (!sum2.ContainsKey(num2)) sum2.Add(num2, 1);
+                else sum2[num2]++;
+            }
+        }
+        int result = 0;
+        foreach (int num in sum1.Keys)
+        {
+            if (sum2.ContainsKey(0 - num)) result += sum1[num] * sum2[0 - num];
+>>>>>>> 04f4477d22d07e23e44120a193def100a3f13ab3
         }
         return result;
     }
