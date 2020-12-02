@@ -69,6 +69,166 @@ public class Solution
 }
 
 /// <summary>
+/// 题号：321. 拼接最大数
+/// 题目：
+/// 给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k <= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
+/// 求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
+/// 说明: 请尽可能地优化你算法的时间和空间复杂度。
+/// 示例 1:
+/// 输入:
+/// nums1 = [3, 4, 6, 5]
+/// nums2 = [9, 1, 2, 5, 8, 3]
+/// k = 5
+/// 输出:
+/// [9, 8, 6, 5, 3]
+/// 示例 2:
+/// 输入:
+/// nums1 = [6, 7]
+/// nums2 = [6, 0, 4]
+/// k = 5
+/// 输出:
+/// [6, 7, 6, 0, 4]
+/// 示例 3:
+/// 输入:
+/// nums1 = [3, 9]
+/// nums2 = [8, 9]
+/// k = 3
+/// 输出:
+/// [9, 8, 9]
+/// </summary>
+/// 分别求单调栈
+/// 单调栈
+public class Solution
+{
+    public int[] MaxNumber(int[] nums1, int[] nums2, int k)
+    {
+        if (k == 0) return new int[0];
+        int[] result = new int[k];
+        int m = nums1.Length;
+        int n = nums2.Length;
+        int end = Math.Min(m, k);
+        for (int i = 0; i <= end; i++)
+        {
+            if (n >= k - i)
+            {
+                int[] num1 = MaxNum(nums1, i);
+                int[] num2 = MaxNum(nums2, k - i);
+                int[] temp = Merge(num1, num2);
+                if (Compare(result, temp, 0, 0))
+                {
+                    result = temp;
+                }
+            }
+        }
+        return result;
+    }
+
+    //求数组中k个最大数
+    //单调栈
+    public int[] MaxNum(int[] num, int k)
+    {
+        if (k == 0) return new int[0];
+        int n = num.Length;
+        //去除的个数
+        int nlen = n - k;
+        Stack<int> result = new Stack<int>();
+        for (int i = 0; i < n; i++)
+        {
+            while (result.Count != 0 && result.Peek() < num[i] && nlen > 0)
+            {
+                result.Pop();
+                nlen--;
+            }
+            result.Push(num[i]);
+        }
+        while (nlen > 0)
+        {
+            result.Pop();
+            nlen--;
+        }
+        int[] temp = new int[k];
+        for (int i = k - 1; i >= 0; i--)
+        {
+            temp[i] = result.Pop();
+        }
+        return temp;
+    }
+
+    //合并数组
+    public int[] Merge(int[] nums1, int[] nums2)
+    {
+        int m = nums1.Length;
+        int n = nums2.Length;
+        int[] result = new int[m + n];
+        int i = 0;
+        int j = 0;
+        int index = 0;
+        while (i < m && j < n)
+        {
+            if (nums1[i] < nums2[j])
+            {
+                result[index] = nums2[j];
+                j++;
+            }
+            else if (nums1[i] > nums2[j])
+            {
+                result[index] = nums1[i];
+                i++;
+            }
+            else
+            {
+                //相等时要分情况
+                //不能只比较自身，还要看剩下的情况
+                if (Compare(nums1, nums2, i, j))
+                {
+                    result[index] = nums2[j];
+                    j++;
+                }
+                else
+                {
+                    result[index] = nums1[i];
+                    i++;
+                }
+            }
+            index++;
+        }
+        while (i < m)
+        {
+            result[index++] = nums1[i++];
+        }
+        while (j < n)
+        {
+            result[index++] = nums2[j++];
+        }
+        return result;
+    }
+
+    //比较两个数组大小
+    public bool Compare(int[] nums1, int[] nums2, int i, int j)
+    {
+        int m = nums1.Length;
+        int n = nums2.Length;
+        while (i < m && j < n)
+        {
+            if (nums1[i] > nums2[j])
+            {
+                return false;
+            }
+            else if (nums1[i] < nums2[j])
+            {
+                return true;
+            }
+            else
+            {
+                i++;
+                j++;
+            }
+        }
+        return (m - i) - (n - j) > 0 ? false : true;
+    }
+}
+
+/// <summary>
 /// 题号：452. 用最少数量的箭引爆气球
 /// 题目：
 /// 在二维空间中有许多球形的气球。对于每个气球，提供的输入是水平方向上，气球直径的开始和结束坐标。由于它是水平的，所以纵坐标并不重要，因此只要知道开始和结束的横坐标就足够了。开始坐标总是小于结束坐标。
