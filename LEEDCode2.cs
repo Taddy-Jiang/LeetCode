@@ -3,6 +3,86 @@ using System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+/// <summary>
+/// 题号：204. 计数质数
+/// 题目：
+/// 统计所有小于非负整数 n 的质数的数量。
+/// 示例 1：
+/// 输入：n = 10
+/// 输出：4
+/// 解释：小于 10 的质数一共有 4 个, 它们是 2, 3, 5, 7 。
+/// 示例 2：
+/// 输入：n = 0
+/// 输出：0
+/// 示例 3：
+/// 输入：n = 1
+/// 输出：0
+/// 提示：
+/// 0 <= n <= 5 * 106
+/// </summary>
+/// 法一：暴力
+public class Solution
+{
+    public int CountPrimes(int n)
+    {
+        if (n < 2) return 0;
+
+        int result = 0;
+        //暴力：每次看当前数i与n的关系，如果n/i也是数，则为合数
+        for (int i = 2; i < n; i++)
+        {
+            result += isPrimes(i) ? 1 : 0;
+        }
+        return result;
+    }
+
+    private bool isPrimes(int n)
+    {
+        for (int i = 2; i * i <= n; i++)
+        {
+            //n为i的整数倍
+            if (n % i == 0)
+            {
+                //为合数
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+/// 法二：埃氏筛
+/// 每次遍历一个质数，它的倍数肯定为合数
+public class Solution
+{
+    public int CountPrimes(int n)
+    {
+        if (n < 2) return 0;
+
+        int result = 0;
+        //设定一个数组，设定初始全为质数（false）
+        bool[] isNotPrimes = new bool[n];
+        for (int i = 2; i < n; i++)
+        {
+            if (!isNotPrimes[i])
+            {
+                result++;
+                //把所有倍数设定为合数
+                //从i*i开始即可
+                if ((long)i * i < n)
+                {
+                    for (int j = i * i; j < n; j += i)
+                    {
+                        isNotPrimes[j] = true;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+}
+
 /// <summary>
 /// 题号：316. 去除重复字母
 /// 题目：
