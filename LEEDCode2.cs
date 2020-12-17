@@ -84,6 +84,59 @@ public class Solution
 }
 
 /// <summary>
+/// 题号：290. 单词规律
+/// 题目：
+/// 给定一种规律 pattern 和一个字符串 str ，判断 str 是否遵循相同的规律。
+/// 这里的 遵循 指完全匹配，例如， pattern 里的每个字母和字符串 str 中的每个非空单词之间存在着双向连接的对应规律。
+/// 示例1:
+/// 输入: pattern = "abba", str = "dog cat cat dog"
+/// 输出: true
+/// 示例 2:
+/// 输入: pattern = "abba", str = "dog cat cat fish"
+/// 输出: false
+/// 示例 3:
+/// 输入: pattern = "aaaa", str = "dog cat cat dog"
+/// 输出: false
+/// 示例 4:
+/// 输入: pattern = "abba", str = "dog dog dog dog"
+/// 输出: false
+/// 说明:
+/// 你可以假设 pattern 只包含小写字母， str 包含了由单个空格分隔的小写字母。 
+/// </summary>
+public class Solution
+{
+    public bool WordPattern(string pattern, string s)
+    {
+        if (s.Length == 0)
+        {
+            if (pattern.Length == 0) return true;
+            else return false;
+        }
+        string[] temp = s.Split(" ");
+        if (pattern.Length != temp.Length) return false;
+        Dictionary<string, char> Hash = new Dictionary<string, char>();
+        for (int i = 0; i < temp.Length; i++)
+        {
+            if (Hash.ContainsKey(temp[i]))
+            {
+                if (pattern[i] != Hash[temp[i]]) return false;
+            }
+            else
+            {
+                Hash.Add(temp[i], pattern[i]);
+            }
+        }
+        HashSet<char> Hashtemp = new HashSet<char>();
+        foreach (char var in Hash.Values)
+        {
+            if (Hashtemp.Contains(var)) return false;
+            else Hashtemp.Add(var);
+        }
+        return true;
+    }
+}
+
+/// <summary>
 /// 题号：316. 去除重复字母
 /// 题目：
 /// 给你一个字符串 s ，请你去除字符串中重复的字母，使得每个字母只出现一次。需保证 返回结果的字典序最小（要求不能打乱其他字符的相对位置）。
