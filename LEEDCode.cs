@@ -7193,6 +7193,146 @@ public class Solution
 }
 
 /// <summary>
+/// 题号：721. 账户合并
+/// 题目：
+/// 给定一个列表 accounts，每个元素 accounts[i] 是一个字符串列表，其中第一个元素 accounts[i][0] 是 名称 (name)，其余元素是 emails 表示该账户的邮箱地址。
+/// 现在，我们想合并这些账户。如果两个账户都有一些共同的邮箱地址，则两个账户必定属于同一个人。
+/// 请注意，即使两个账户具有相同的名称，它们也可能属于不同的人，因为人们可能具有相同的名称。一个人最初可以拥有任意数量的账户，但其所有账户都具有相同的名称。
+/// 合并账户后，按以下格式返回账户：每个账户的第一个元素是名称，其余元素是按顺序排列的邮箱地址。账户本身可以以任意顺序返回。
+/// 示例 1：
+/// 输入：
+/// accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]]
+/// 输出：
+/// [["John", 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com'],  ["John", "johnnybravo@mail.com"], ["Mary", "mary@mail.com"]]
+/// 解释：
+/// 第一个和第三个 John 是同一个人，因为他们有共同的邮箱地址 "johnsmith@mail.com"。 
+/// 第二个 John 和 Mary 是不同的人，因为他们的邮箱地址没有被其他帐户使用。
+/// 可以以任何顺序返回这些列表，例如答案 [['Mary'，'mary@mail.com']，['John'，'johnnybravo@mail.com']，
+/// ['John'，'john00@mail.com'，'john_newyork@mail.com'，'johnsmith@mail.com']] 也是正确的。
+/// 提示：
+/// accounts的长度将在[1，1000]的范围内。
+/// accounts[i]的长度将在[1，10]的范围内。
+/// accounts[i][j]的长度将在[1，30]的范围内。
+/// 
+/// 并查集
+/// </summary>
+using System.Collections;
+public class Solution
+{
+    public IList<IList<string>> AccountsMerge(IList<IList<string>> accounts)
+    {
+        //将邮箱与序号对应，方便并查集
+        Dictionary<string, int> Hash_index = new Dictionary<string, int>();
+        //邮箱与人对应
+        Dictionary<string, string> Hash_name = new Dictionary<string, string>();
+
+        //邮箱序号
+        int emailindex = 0;
+        foreach (IList<string> account in accounts)
+        {
+            string name = account[0];  //人名
+            int size = account.Count;  //总长度
+            for (int i = 1; i < size; i++)  
+            {
+                string email = account[i]; //从第1位起为邮箱
+                if (!Hash_index.ContainsKey(email))
+                {
+                    Hash_index.Add(email, emailindex++);
+                    Hash_name.Add(email, name);
+                }
+            }
+        }
+
+        //建立并查集
+        JoinFind joinFind = new JoinFind(emailindex);
+
+        //建立联系
+        foreach (IList<string> account in accounts)
+        {
+            string email1 = account[1];  //第一个邮箱
+            int email1_index = Hash_index[email1]; //第一个邮箱对应序号
+            int size = account.Count;  //总长度
+            for (int i = 2; i < size; i++)  //从第二个邮箱开始建立联系
+            {
+                string email2 = account[i];
+                int email2_index = Hash_index[email2];
+                joinFind.join(email1_index, email2_index);
+            }
+        }
+
+        //序号对应的邮箱组
+        //即每一个邮箱在哪一个邮箱组内
+        //以父节点为头
+        Dictionary<int, IList<string>> Hash_emails = new Dictionary<int, IList<string>>();
+        //所有邮箱
+        foreach (string email in Hash_index.Keys)
+        {
+            int email_index = Hash_index[email];
+            int parentindex = joinFind.find(email_index);//找到父节点
+            if (Hash_emails.ContainsKey(parentindex))
+            {
+                Hash_emails[parentindex].Add(email);
+            }
+            else
+            {
+                Hash_emails.Add(parentindex, new List<string>() { email });
+            }
+        }
+
+        //答案
+        IList<IList<string>> result = new List<IList<string>>();
+
+        //合并答案
+        foreach (List<string> emails in Hash_emails.Values)
+        {
+            string name = Hash_name[emails[0]];  //第一个邮箱对应的人物名称
+            emails.Insert(0, name);
+            result.Add(emails);
+        }
+        return result;
+    }
+}
+
+//并查集模板
+public class JoinFind
+{
+    int[] parent;
+
+    //初始化，先各自为政，有几个认为父节点为自身
+    public JoinFind(int n)
+    {
+        parent = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            parent[i] = i;  //父节点为自身
+        }
+    }
+
+    //查找自身的父节点
+    //对应几号的父节点
+    //同时压缩
+    public int find(int index)
+    {
+        //如果当前节点的父节点不为自身，即还存在上一级情况
+        //继续寻找，直到找到父节点
+        //同时压缩节点深度
+        if (parent[index] != index)
+        {
+            parent[index] = find(parent[index]);
+        }
+        //返回父节点
+        return parent[index];
+    }
+
+    //连接
+    public void join(int index1, int index2)
+    {
+        //让两者的父节点相互联系
+        parent[find(index1)] = find(index2);
+    }
+}
+
+/// <summary>
 /// 题号：763. 划分字母区间
 /// 题目：
 /// 字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一个字母只会出现在其中的一个片段。返回一个表示每个字符串片段的长度的列表。
